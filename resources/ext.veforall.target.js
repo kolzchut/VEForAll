@@ -42,12 +42,14 @@
 	mw.veForAll.Target.prototype.init = function ( content ) {
 		this.convertToHtml( content );
 	};
+	mw.veForAll.Target.prototype.getContentApi = function ( doc, options ) {
+	  return new mw.Api( options );
+	};
 
 	// Static
 
 	mw.veForAll.Target.static.name = 'veForAll';
 	var toolGroups = mw.config.get('VEForAll');
-	
 	mw.veForAll.Target.static.toolbarGroups = toolGroups ? toolGroups.veForAllToolGroups : [];
 
 	mw.veForAll.Target.static.actionGroups = [
