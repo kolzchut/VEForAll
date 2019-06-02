@@ -141,6 +141,10 @@
 			.prop( 'disabled', false );
 
 		// When editor loses focus, update the field input.
+		this.getSurface().getView().on( 'focus', function ( data ) {
+			target.focusedWithoutUpdate = true;
+		} );
+
 		this.getSurface().getView().on( 'blur', function ( data ) {
 			target.updateContent();
 		} );
@@ -173,7 +177,8 @@
 	 * Update the original textarea value with the content of VisualEditor
 	 * surface (convert the content into wikitext)
 	 */
-	mw.veForAll.Target.prototype.updateContent = function () {
+	mw.veForAll.Target.prototype.updateContent = function (){ 
+		this.focusedWithoutUpdate = false;	
 		var surface = this.getSurface();
 		if ( surface !== null ) {
 			this.convertToWikiText( surface.getHtml() );
@@ -189,11 +194,11 @@
 			oldFormat = 'html',
 			newFormat = 'wikitext',
 			apiCall;
-
+		target.convertingStarted();
+		
 		$( this.$node )
 			.prop( 'disabled', true )
 			.addClass( 'oo-ui-texture-pending' );
-		target.convertingStarted();
 		apiCall = new mw.Api().post( {
 			action: 'veforall-parsoid-utils',
 			from: oldFormat,
@@ -204,14 +209,14 @@
 
 			$( target.$node ).val( data[ 'veforall-parsoid-utils' ].content );
 			$( target.$node ).change();
-			target.convertingFinished();
 			$( target.$node )
 					.removeClass( 'oo-ui-texture-pending' )
 					.prop( 'disabled', false );
+			target.convertingFinished();
 		} )
 				.fail( function ( data ) {
 					target.convertingFinished();
-					console.log( 'Error converting to wikitext' );
+					console.log( 'Error converting to wikitext');
 				} );
 
 	};

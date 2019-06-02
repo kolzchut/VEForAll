@@ -47,24 +47,41 @@
 		}
 		return everythingUpdated;
 	}
+	mw.tryToTriggerUpdate = function( ) {
+		let instanceFound = false;
+		for(let veInstance of veInstances){
+			if( veInstance.target.focusedWithoutUpdate ){
+				veInstance.target.updateContent();
+				instanceFound = true;
+			}
+		}
+		return instanceFound;
+	}
+
 	function catchAndDelayClickEvent( buttonId ) {
-		var waitForUpdatingStoppd
+		var waitForUpdatingStoppd;
 
 		$( '#' + buttonId ).click( function ( event ) {
-			
+			console.log("click", mw.isNoVeWaitingForUpdate());
 			if( !$(this).data('passCheck') ){
 				//start by stoping current event
 				event.preventDefault();
 				//let blur of textarea affect
 				waitForUpdatingStoppd = setInterval(function(){
 					//check if all veditors finished
+					if( mw.tryToTriggerUpdate() ){
+						return;
+					}
 					if( mw.isNoVeWaitingForUpdate() ){
 						clearInterval( waitForUpdatingStoppd );
 						$(event.target).data('passCheck', 1)
 							.trigger('click');
+						
 					}
-				},50);
+					
+				},110);
 			}
+			//return false;
 		});
 	}
 
