@@ -150,9 +150,9 @@
 		} );
 
 		// show or hide toolbar when lose focus
-		// this.getSurface().getView().on( 'blur', function (data) {
-		// 	target.updateToolbarVisibility();
-		// } );
+		this.getSurface().getView().on( 'blur', function (data) {
+			target.updateToolbarVisibility();
+		} );
 		this.getSurface().getView().on( 'focus', function ( data ) {
 			target.updateToolbarVisibility();
 		} );
