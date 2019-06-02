@@ -178,6 +178,10 @@
 			.prop( 'disabled', false );
 
 		// When editor loses focus, update the field input.
+		this.getSurface().getView().on( 'focus', function ( data ) {
+			target.focusedWithoutUpdate = true;
+		} );
+
 		this.getSurface().getView().on( 'blur', function ( data ) {
 			target.updateContent();
 		} );
@@ -187,9 +191,9 @@
 		} );
 
 		// show or hide toolbar when lose focus
-		// this.getSurface().getView().on( 'blur', function (data) {
-		// 	target.updateToolbarVisibility();
-		// } );
+		this.getSurface().getView().on( 'blur', function (data) {
+			target.updateToolbarVisibility();
+		} );
 		this.getSurface().getView().on( 'focus', function ( data ) {
 			target.updateToolbarVisibility();
 		} );
@@ -210,7 +214,8 @@
 	 * Update the original textarea value with the content of VisualEditor
 	 * surface (convert the content into wikitext)
 	 */
-	mw.veForAll.Target.prototype.updateContent = function () {
+	mw.veForAll.Target.prototype.updateContent = function (){ 
+		this.focusedWithoutUpdate = false;	
 		var surface = this.getSurface();
 		if ( surface !== null ) {
 			this.convertToWikiText( surface.getHtml() );
@@ -226,11 +231,11 @@
 			oldFormat = 'html',
 			newFormat = 'wikitext',
 			apiCall;
-
+		target.convertingStarted();
+		
 		$( this.$node )
 			.prop( 'disabled', true )
 			.addClass( 'oo-ui-texture-pending' );
-
 		apiCall = new mw.Api().post( {
 			action: 'veforall-parsoid-utils',
 			from: oldFormat,
@@ -238,19 +243,28 @@
 			content: content,
 			title: this.getPageName()
 		} ).then( function ( data ) {
+
 			$( target.$node ).val( data[ 'veforall-parsoid-utils' ].content );
 			$( target.$node ).change();
-
 			$( target.$node )
 					.removeClass( 'oo-ui-texture-pending' )
 					.prop( 'disabled', false );
+			target.convertingFinished();
 		} )
 				.fail( function ( data ) {
-					console.log( 'Error converting to wikitext' );
+					target.convertingFinished();
+					console.log( 'Error converting to wikitext');
 				} );
 
 	};
-
+	mw.veForAll.Target.prototype.convertingStarted = function(){
+		this.isOnConverting = true;
+		$('body').trigger('VEForAllConvertingStarted');
+	}
+	mw.veForAll.Target.prototype.convertingFinished = function(){
+		this.isOnConverting = false;
+		$('body').trigger('VEForAllConvertingFinished');
+	}	
 	mw.veForAll.Target.prototype.convertToHtml = function ( content ) {
 		var target = this,
 			oldFormat = 'wikitext',
