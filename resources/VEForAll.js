@@ -62,7 +62,6 @@
 		var waitForUpdatingStoppd;
 
 		$( '#' + buttonId ).click( function ( event ) {
-			console.log("click", mw.isNoVeWaitingForUpdate());
 			if( !$(this).data('passCheck') ){
 				//start by stoping current event
 				event.preventDefault();
