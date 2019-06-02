@@ -40,68 +40,32 @@
 		$( document ).trigger( 'VEForAllLoaded' );
 	}
 
-	function catchAndDelayClickEvent( buttonId ) {
-		var updateNeeded, i, curTime, finishTime;
-
-		if ( !clickCount[ buttonId ] ) {
-			clickCount[ buttonId ] = 0;
+	mw.isNoVeWaitingForUpdate = function( ) {
+		var everythingUpdated = true;
+		for(let veInstance of veInstances){
+			everythingUpdated = everythingUpdated && !veInstance.isOnConverting;
 		}
+		return everythingUpdated;
+	}
+	function catchAndDelayClickEvent( buttonId ) {
+		var waitForUpdatingStoppd
 
 		$( '#' + buttonId ).click( function ( event ) {
-			clickCount[ buttonId ]++;
-			// the click count var is a security to avoid infinite loop if api calls do not end
-			updateNeeded = false;
-			// if one VE area is focused, we force to update its data by blurring it
-			for ( i = 0; i < veInstances.length; i++ ) {
-				if ( veInstances[ i ].target.getSurface().getView().isFocused() ) {
-					veInstances[ i ].target.getSurface().getView().blur();
-					updateNeeded = true;
-					// @HACK - total hack to get focused
-					// textareas to actually submit correctly.
-					// Unfortunately, the setTimeout() calls below
-					// don't seem to work, because they're
-					// asynchronous, so we use an old-fashioned
-					// synchronous call, equivalent to sleep(),
-					// to delay until (hopefully) the VE
-					// conversion of its contents occurs.
-					// This is undoubtedly a bad solution, and
-					// the right approach would be to only
-					// submit once the conversion has occurred
-					// (i.e., what clickWhenApiCallDone() is
-					// supposed to do). However, this is the
-					// easier solution, and it seems to fix
-					// the problem, in most cases.
-					curTime = new Date().getTime();
-					finishTime = curTime + 500;
-					while ( curTime < finishTime ) {
-						curTime = new Date().getTime();
-					}
-				}
-			}
-			if ( ( updateNeeded || jQuery.active > 0 ) && clickCount[ buttonId ] < 2 ) {
-				// if an update is needed, stop event propagation, and delay before relaunch
+			
+			if( !$(this).data('passCheck') ){
+				//start by stoping current event
 				event.preventDefault();
-				setTimeout( function () {
-					clickWhenApiCallDone( '#' + buttonId );
-				}, 100 );
-			} else {
-				// if success, we can reset the clickCount to 0 to re-enable other calls.
-				clickCount[ buttonId ] = 0;
+				//let blur of textarea affect
+				waitForUpdatingStoppd = setInterval(function(){
+					//check if all veditors finished
+					if( mw.isNoVeWaitingForUpdate() ){
+						clearInterval( waitForUpdatingStoppd );
+						$(event.target).data('passCheck', 1)
+							.trigger('click');
+					}
+				},50);
 			}
-		} );
-	}
-
-	function clickWhenApiCallDone( button, maxCount ) {
-		if ( maxCount === null ) {
-			maxCount = 5;
-		}
-		if ( jQuery.active > 0 && maxCount > 0 ) {
-			setTimeout( function () {
-				clickWhenApiCallDone( button, maxCount - 1 );
-			}, 500 );
-		} else {
-			$( button ).click();
-		}
+		});
 	}
 
 	jQuery.fn.applyVisualEditor = function () {
@@ -116,7 +80,9 @@
 
 		return this.each( function () {
 			// $(this).before(logo, editor, toolbar);
-			var veEditor = new mw.veForAll.Editor( this, $( this ).val() );
+			var veEditor = new mw.veForAll.Editor( this, $( this ).val(), function(){
+				veInstances.splice( veInstances.indexOf(veEditor), 1 );
+			} );
 			veInstances.push( veEditor );
 		} );
 	};
@@ -127,7 +93,14 @@
 
 	// mw.loader.using( 'ext.veforall.main', $.proxy( initVisualEditor ) );
 	initVisualEditor();
-
+	$('body').on('VEForAllConvertingStarted', function(){
+		//$('#wpSave,#wpSaveAndContinue').attr( 'disabled', 'disabled' );
+	});
+	$('body').on('VEForAllConvertingFinished', function(){
+		// if( mw.isNoVeWaitingForUpdate() ){
+		// 	$('#wpSave,#wpSaveAndContinue').removeAttr( 'disabled' );
+		// }
+	});
 }( jQuery, mw ) );
 
 $ = jQuery;

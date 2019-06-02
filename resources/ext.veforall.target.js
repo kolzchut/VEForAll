@@ -193,7 +193,7 @@
 		$( this.$node )
 			.prop( 'disabled', true )
 			.addClass( 'oo-ui-texture-pending' );
-
+		target.convertingStarted();
 		apiCall = new mw.Api().post( {
 			action: 'veforall-parsoid-utils',
 			from: oldFormat,
@@ -201,19 +201,28 @@
 			content: content,
 			title: this.getPageName()
 		} ).then( function ( data ) {
+
 			$( target.$node ).val( data[ 'veforall-parsoid-utils' ].content );
 			$( target.$node ).change();
-
+			target.convertingFinished();
 			$( target.$node )
 					.removeClass( 'oo-ui-texture-pending' )
 					.prop( 'disabled', false );
 		} )
 				.fail( function ( data ) {
+					target.convertingFinished();
 					console.log( 'Error converting to wikitext' );
 				} );
 
 	};
-
+	mw.veForAll.Target.prototype.convertingStarted = function(){
+		this.isOnConverting = true;
+		$('body').trigger('VEForAllConvertingStarted');
+	}
+	mw.veForAll.Target.prototype.convertingFinished = function(){
+		this.isOnConverting = false;
+		$('body').trigger('VEForAllConvertingFinished');
+	}	
 	mw.veForAll.Target.prototype.convertToHtml = function ( content ) {
 		var target = this,
 			oldFormat = 'wikitext',

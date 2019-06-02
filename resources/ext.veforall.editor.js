@@ -25,7 +25,7 @@
 	 * @param {jQuery} $node Node to replace with a VisualEditor
 	 * @param {string} [content='']
 	 */
-	mw.veForAll.Editor = function ( $node, content ) {
+	mw.veForAll.Editor = function ( $node, content, onDestroy = null ) {
 		var modules;
 
 		// mixin constructor
@@ -46,6 +46,7 @@
 
 		// load dependencies & init editor
 		mw.loader.using( modules, $.proxy( this.init, this, content || '' ) );
+		this.onDestroy = onDestroy;
 	};
 
 	OO.mixinClass( mw.veForAll.Editor, OO.EventEmitter );
@@ -92,6 +93,9 @@
 
 		// re-display original node
 		this.$node.show();
+		if( this.onDestroy && 'function' === this.onDestroy ){
+			this.onDestroy();
+		}
 	};
 
 	/**
