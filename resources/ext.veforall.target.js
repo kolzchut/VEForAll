@@ -189,7 +189,14 @@
 	mw.veForAll.Target.prototype.getPageName = function () {
 		return mw.config.get( 'wgPageName' ).split( /(\\|\/)/g ).pop();
 	};
-
+	//pageforms cant use tables defined by pipes (|) but that exatly what parsoid returns
+	mw.veForAll.Target.prototype.fixTablePipes = function ( wikitext ) {
+		wikitext = wikitext.replace(/\{\{!\}\}/g,'|');
+		return wikitext.replace(/\{\|(\s|\S)+\|\}/g, function( partToReplace ){
+			return partToReplace.replace(/\|/g, '{{!}}');
+		});
+		return wikitext;
+	}
 	mw.veForAll.Target.prototype.convertToWikiText = function ( content ) {
 		var target = this,
 			oldFormat = 'html',
@@ -207,8 +214,8 @@
 			content: content,
 			title: this.getPageName()
 		} ).then( function ( data ) {
-
-			$( target.$node ).val( data[ 'veforall-parsoid-utils' ].content );
+			
+			$( target.$node ).val( target.fixTablePipes( data[ 'veforall-parsoid-utils' ].content ) );
 			$( target.$node ).change();
 			$( target.$node )
 					.removeClass( 'oo-ui-texture-pending' )
