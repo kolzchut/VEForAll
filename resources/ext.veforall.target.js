@@ -23,7 +23,7 @@
 		this.toolbarPosition = 'bottom';
 
 		if ( node.hasClass( 'toolbarOnTop' ) ) {
-			console.log( 'toolbarOnTop' );
+			
 			this.toolbarPosition = 'top';
 			this.toolbarAutoHide = false;
 			config.toolbarConfig.floatable = true;
@@ -37,15 +37,15 @@
 		this.init( content );
 	};
 
-	OO.inheritClass( mw.veForAll.Target, ve.init.sa.Target );
+	OO.inheritClass( mw.veForAll.Target, ve.init.mw.Target );
 
 	mw.veForAll.Target.prototype.init = function ( content ) {
 		this.convertToHtml( content );
 		
 	};
-	mw.veForAll.Target.prototype.getContentApi = function ( doc, options ) {
-	  return new mw.Api( options );
-	};
+	// mw.veForAll.Target.prototype.getContentApi = function ( doc, options ) {
+	//   return new mw.Api( options );
+	// };
 
 	// Static
 
