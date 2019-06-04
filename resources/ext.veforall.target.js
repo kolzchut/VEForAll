@@ -43,52 +43,15 @@
 		this.convertToHtml( content );
 		
 	};
+	mw.veForAll.Target.prototype.getContentApi = function ( doc, options ) {
+	  return new mw.Api( options );
+	};
 
 	// Static
 
 	mw.veForAll.Target.static.name = 'veForAll';
-
-	mw.veForAll.Target.static.toolbarGroups = [
-		// History
-		// { include: [ 'undo', 'redo' ] },
-		// Format
-		{
-			header: OO.ui.deferMsg( 'visualeditor-toolbar-paragraph-format' ),
-			title: OO.ui.deferMsg( 'visualeditor-toolbar-format-tooltip' ),
-			type: 'menu',
-			include: [ { group: 'format' } ],
-			promote: [ 'paragraph' ],
-			demote: [ 'preformatted', 'blockquote' ]
-		},
-		// Text style
-		{
-			header: OO.ui.deferMsg( 'visualeditor-toolbar-text-style' ),
-			title: OO.ui.deferMsg( 'visualeditor-toolbar-style-tooltip' ),
-			include: [ 'bold', 'italic', 'moreTextStyle' ]
-		},
-		// Link
-		{ include: [ 'link' ] },
-		// Structure
-		{
-			header: OO.ui.deferMsg( 'visualeditor-toolbar-structure' ),
-			title: OO.ui.deferMsg( 'visualeditor-toolbar-structure' ),
-			type: 'list',
-			icon: 'listBullet',
-			include: [ { group: 'structure' } ],
-			demote: [ 'outdent', 'indent' ]
-		},
-		// Insert
-		{
-			header: OO.ui.deferMsg( 'visualeditor-toolbar-insert' ),
-			title: OO.ui.deferMsg( 'visualeditor-toolbar-insert' ),
-			type: 'list',
-			icon: 'add',
-			label: '',
-			include: [ 'insertTable', 'specialCharacter', 'warningblock', 'preformatted', 'infoblock', 'ideablock', 'dontblock', 'pinblock' ]
-		}
-		// Special character toolbar
-		// { include: [ 'specialCharacter' ] }
-	];
+	var toolGroups = mw.config.get('VEForAll');
+	mw.veForAll.Target.static.toolbarGroups = toolGroups ? toolGroups.veForAllToolGroups : [];
 
 	mw.veForAll.Target.static.actionGroups = [
 		{ include: [ 've4aSwitchEditor' ] }
@@ -265,6 +228,7 @@
 	mw.veForAll.Target.prototype.convertingFinished = function(){
 		this.isOnConverting = false;
 		$('body').trigger('VEForAllConvertingFinished');
+<<<<<<< HEAD
 	}
 	mw.veForAll.Target.prototype.setDir = function(){
 		 var view = this.surface.getView(),
@@ -272,6 +236,8 @@
 		if(view){
 			view.getDocument().setDir(dir);
 		}
+=======
+>>>>>>> 819a31eb27a33ba7f52eadde2b70406790c270b7
 	}	
 	mw.veForAll.Target.prototype.convertToHtml = function ( content ) {
 		var target = this,
