@@ -228,7 +228,6 @@
 	mw.veForAll.Target.prototype.convertingFinished = function(){
 		this.isOnConverting = false;
 		$('body').trigger('VEForAllConvertingFinished');
-<<<<<<< HEAD
 	}
 	mw.veForAll.Target.prototype.setDir = function(){
 		 var view = this.surface.getView(),
@@ -236,8 +235,6 @@
 		if(view){
 			view.getDocument().setDir(dir);
 		}
-=======
->>>>>>> 819a31eb27a33ba7f52eadde2b70406790c270b7
 	}	
 	mw.veForAll.Target.prototype.convertToHtml = function ( content ) {
 		var target = this,
