@@ -41,6 +41,7 @@
 
 	mw.veForAll.Target.prototype.init = function ( content ) {
 		this.convertToHtml( content );
+		
 	};
 
 	// Static
@@ -198,7 +199,7 @@
 			target.updateToolbarVisibility();
 		} );
 		target.updateToolbarVisibility();
-
+		this.setDir();
 		// focus VE instance if textarea had focus
 		if ( $focusedElement.length && this.$node.is( $focusedElement ) ) {
 			this.getSurface().getView().focus();
@@ -264,6 +265,13 @@
 	mw.veForAll.Target.prototype.convertingFinished = function(){
 		this.isOnConverting = false;
 		$('body').trigger('VEForAllConvertingFinished');
+	}
+	mw.veForAll.Target.prototype.setDir = function(){
+		 var view = this.surface.getView(),
+		 	dir = $('body').is('.rtl') ? 'rtl' : 'ltr';
+		if(view){
+			view.getDocument().setDir(dir);
+		}
 	}	
 	mw.veForAll.Target.prototype.convertToHtml = function ( content ) {
 		var target = this,
@@ -299,6 +307,7 @@
 				.addClass( 'oo-ui-icon-wikiText' );
 			$( textarea ).parent().find( '.oo-ui-tool-link' )
 				.attr( 'title', OO.ui.deferMsg( 'veforall-switch-editor-tool-title' ) );
+			this.setDir();
 		} else {
 			$( textarea ).parent().find( '.oo-ui-icon-wikiText' )
 				.removeClass( 'oo-ui-icon-wikiText' )
