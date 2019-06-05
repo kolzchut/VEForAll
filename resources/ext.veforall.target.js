@@ -186,14 +186,33 @@
 		}
 	};
 
+	mw.veForAll.Target.prototype.fixTablePipesInner = function ( partToReplace ) {
+		var currnentChar, 
+			lastChar = '',
+			insideTempalte = false,
+			replacesStr = '';
+		for (var i = 0; i < partToReplace.length; i++) {
+		  currnentChar = partToReplace.charAt(i);
+		  if( '[' === currnentChar || '{{' === currnentChar + lastChar ){
+		  	insideTempalte = true;
+		  }
+		  else if( ']' === currnentChar || '}}' === currnentChar + lastChar ){
+		  	insideTempalte = false;
+		  }
+		  lastChar = currnentChar;
+		  replacesStr += ( !insideTempalte && '|' === currnentChar) ? '{{!}}' : currnentChar;
+		}
+		return replacesStr;
+	}
 	mw.veForAll.Target.prototype.getPageName = function () {
 		return mw.config.get( 'wgPageName' ).split( /(\\|\/)/g ).pop();
 	};
 	//pageforms cant use tables defined by pipes (|) but that exatly what parsoid returns
 	mw.veForAll.Target.prototype.fixTablePipes = function ( wikitext ) {
+		var target = this;
 		wikitext = wikitext.replace(/\{\{!\}\}/g,'|');
-		return wikitext.replace(/\{\|(\s|\S)+\|\}/g, function( partToReplace ){
-			return partToReplace.replace(/\|/g, '{{!}}');
+		return wikitext.replace(/\{\|(\s|\S)+\|\}/g, function( partToReplace ){		
+			return target.fixTablePipesInner( partToReplace );
 		});
 		return wikitext;
 	}
