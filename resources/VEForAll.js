@@ -113,7 +113,7 @@
 		for( let instance of veInstances){
 			//find instance that own this sourface
 			if( this == instance.target.getSurface().getView().$element.get(0)){
-				/ When editor loses focus, update the field input.
+				// When editor loses focus, update the field input.
 				instance.target.focusedWithoutUpdate = true;
 			}
 		}
