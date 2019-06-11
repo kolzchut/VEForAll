@@ -73,8 +73,9 @@
 					}
 					if( mw.isNoVeWaitingForUpdate() ){
 						clearInterval( waitForUpdatingStoppd );
-						$(event.target).data('passCheck', 1)
-							.trigger('click');
+						console.log("now triggering");
+						// $(event.target).data('passCheck', 1)
+						// 	.trigger('click');
 						
 					}
 					
@@ -106,8 +107,18 @@
 		return veInstances;
 	};
 
-	// mw.loader.using( 'ext.veforall.main', $.proxy( initVisualEditor ) );
 	initVisualEditor();
+	//sourface can be destroyed and built. We catching focus hard way.
+	$('body').on('focus','.ve-ce-surface', function(){
+		for( let instance of veInstances){
+			//find instance that own this sourface
+			if( this == instance.target.getSurface().getView().$element.get(0)){
+				/ When editor loses focus, update the field input.
+				instance.target.focusedWithoutUpdate = true;
+			}
+		}
+
+	});
 	$('body').on('VEForAllConvertingStarted', function(){
 		//$('#wpSave,#wpSaveAndContinue').attr( 'disabled', 'disabled' );
 	});

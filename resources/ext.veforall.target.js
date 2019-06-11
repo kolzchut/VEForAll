@@ -142,9 +142,10 @@
 			.prop( 'disabled', false );
 
 		// When editor loses focus, update the field input.
-		this.getSurface().getView().on( 'focus', function ( data ) {
-			target.focusedWithoutUpdate = true;
-		} );
+		// this.getSurface().getView().on( 'focus', function ( data ) {
+		// 	console.log(target.$node); 
+		// 	target.focusedWithoutUpdate = true;
+		// } );
 
 		this.getSurface().getView().on( 'blur', function ( data ) {
 			target.updateContent();
@@ -254,7 +255,7 @@
 	mw.veForAll.Target.prototype.convertingFinished = function(){
 		this.isOnConverting = false;
 		this.focusedWithoutUpdate = false;	
-		// console.log("now finisehes!!!!!!", this.$node.val())
+		console.log("now finisehes!!!!!!", this.$node.val())
 		$('body').trigger('VEForAllConvertingFinished');
 	}
 	mw.veForAll.Target.prototype.setDir = function(){
