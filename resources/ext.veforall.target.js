@@ -255,7 +255,7 @@
 	mw.veForAll.Target.prototype.convertingFinished = function(){
 		this.isOnConverting = false;
 		this.focusedWithoutUpdate = false;	
-		console.log("now finisehes!!!!!!", this.$node.val())
+		//console.log("now finisehes!!!!!!", this.$node.val())
 		$('body').trigger('VEForAllConvertingFinished');
 	}
 	mw.veForAll.Target.prototype.setDir = function(){
