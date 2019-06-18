@@ -73,9 +73,9 @@
 					}
 					if( mw.isNoVeWaitingForUpdate() ){
 						clearInterval( waitForUpdatingStoppd );
-						console.log("now triggering");
-						// $(event.target).data('passCheck', 1)
-						// 	.trigger('click');
+						// console.log("now triggering");
+						$(event.target).data('passCheck', 1)
+							.trigger('click');
 						
 					}
 					
