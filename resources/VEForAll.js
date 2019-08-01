@@ -56,7 +56,7 @@
 		return this.each( function () {
 
 			var textarea = this,
-				veEditor = new mw.veForAll.Editor( this, $( this ).val(), , function(){
+				veEditor = new mw.veForAll.Editor( this, $( this ).val(), function(){
 					veInstances.splice( veInstances.indexOf(veEditor), 1 );
 				});
 
