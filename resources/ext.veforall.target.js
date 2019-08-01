@@ -43,52 +43,15 @@
 	mw.veForAll.Target.prototype.init = function ( content ) {
 		this.convertToHtml( content );
 	};
+	mw.veForAll.Target.prototype.getContentApi = function ( doc, options ) {
+	  return new mw.Api( options );
+	};
 
 	// Static
 
 	mw.veForAll.Target.static.name = 'veForAll';
-
-	mw.veForAll.Target.static.toolbarGroups = [
-		// History
-		// { include: [ 'undo', 'redo' ] },
-		// Format
-		{
-			header: OO.ui.deferMsg( 'visualeditor-toolbar-paragraph-format' ),
-			title: OO.ui.deferMsg( 'visualeditor-toolbar-format-tooltip' ),
-			type: 'menu',
-			include: [ { group: 'format' } ],
-			promote: [ 'paragraph' ],
-			demote: [ 'preformatted', 'blockquote' ]
-		},
-		// Text style
-		{
-			header: OO.ui.deferMsg( 'visualeditor-toolbar-text-style' ),
-			title: OO.ui.deferMsg( 'visualeditor-toolbar-style-tooltip' ),
-			include: [ 'bold', 'italic', 'moreTextStyle' ]
-		},
-		// Link
-		{ include: [ 'link' ] },
-		// Structure
-		{
-			header: OO.ui.deferMsg( 'visualeditor-toolbar-structure' ),
-			title: OO.ui.deferMsg( 'visualeditor-toolbar-structure' ),
-			type: 'list',
-			icon: 'listBullet',
-			include: [ { group: 'structure' } ],
-			demote: [ 'outdent', 'indent' ]
-		},
-		// Insert
-		{
-			header: OO.ui.deferMsg( 'visualeditor-toolbar-insert' ),
-			title: OO.ui.deferMsg( 'visualeditor-toolbar-insert' ),
-			type: 'list',
-			icon: 'add',
-			label: '',
-			include: [ 'insertTable', 'specialCharacter', 'warningblock', 'preformatted', 'infoblock', 'ideablock', 'dontblock', 'pinblock' ]
-		}
-		// Special character toolbar
-		// { include: [ 'specialCharacter' ] }
-	];
+	var toolGroups = mw.config.get('VEForAll');
+	mw.veForAll.Target.static.toolbarGroups = toolGroups ? toolGroups.veForAllToolGroups : [];
 
 	mw.veForAll.Target.static.actionGroups = [
 		{ include: [ 've4aSwitchEditor' ] }
@@ -178,22 +141,22 @@
 		$( this.$node ).hide()
 			.removeClass( 'oo-ui-texture-pending' ).prop( 'disabled', false );
 
-		// When editor loses focus, update the field input.
-		// this.getSurface().getView().on( 'blur', function ( data ) {
-		// target.updateContent();
-		// } );
 
 		this.getSurface().on( 'switchEditor', function () {
+
 			target.switchEditor();
 		} );
 
 		// show or hide toolbar when lose focus
-		// this.getSurface().getView().on( 'blur', function (data) {
-		// 	target.updateToolbarVisibility();
-		// } );
+
 		this.getSurface().getView().on( 'focus', function () {
 			target.updateToolbarVisibility();
 		} );
+
+		this.getSurface().getView().on( 'blur', function (data) {
+			target.updateToolbarVisibility();
+		} );
+
 		target.updateToolbarVisibility();
 
 		// focus VE instance if textarea had focus
@@ -216,7 +179,8 @@
 	 *
 	 * @return {Promise}
 	 */
-	mw.veForAll.Target.prototype.updateContent = function () {
+	mw.veForAll.Target.prototype.updateContent = function (){ 
+		this.focusedWithoutUpdate = false;	
 		var surface = this.getSurface();
 		if ( surface !== null && !$( this.$node ).is( ':visible' ) ) {
 			return this.convertToWikiText( surface.getHtml() );
@@ -232,12 +196,12 @@
 			oldFormat = 'html',
 			newFormat = 'wikitext',
 			apiCall;
-
+		target.convertingStarted();
+		
 		$( this.$node )
 			.prop( 'disabled', true )
 			.addClass( 'oo-ui-texture-pending' );
-
-		$( this.$element ).addClass( 'oo-ui-texture-pending' );
+	$( this.$element ).addClass( 'oo-ui-texture-pending' );
 
 		apiCall = new mw.Api().post( {
 			action: 'veforall-parsoid-utils',
@@ -246,9 +210,9 @@
 			content: content,
 			title: this.getPageName()
 		} ).then( function ( data ) {
+
 			$( target.$node ).val( data[ 'veforall-parsoid-utils' ].content );
 			$( target.$node ).change();
-
 			$( target.$node )
 				.prop( 'disabled', false )
 				.removeClass( 'oo-ui-texture-pending' );
@@ -262,7 +226,14 @@
 		return apiCall;
 
 	};
-
+	mw.veForAll.Target.prototype.convertingStarted = function(){
+		this.isOnConverting = true;
+		$('body').trigger('VEForAllConvertingStarted');
+	}
+	mw.veForAll.Target.prototype.convertingFinished = function(){
+		this.isOnConverting = false;
+		$('body').trigger('VEForAllConvertingFinished');
+	}	
 	mw.veForAll.Target.prototype.convertToHtml = function ( content, callback ) {
 		var target = this,
 			oldFormat = 'wikitext',

@@ -49,12 +49,19 @@
 		var config = mw.config.get( 'VEForAll' );
 		if ( !config.VisualEditorEnable ) {
 			return false;
+
 		}
+		return instanceFound;
+	}
+
+	function catchAndDelayClickEvent( buttonId ) {
+		var waitForUpdatingStoppd;
 
 		return this.each( function () {
 
 			var textarea = this,
 				veEditor = new mw.veForAll.Editor( this, $( this ).val() );
+
 
 			veEditor.initCallbacks.push( function () {
 				// Handle keyup events on ve surfaces and textarea to let other know that something has changed there
@@ -72,8 +79,16 @@
 				} );
 			} );
 
+
+		return this.each( function () {
+			// $(this).before(logo, editor, toolbar);
+			var veEditor = new mw.veForAll.Editor( this, $( this ).val(), function(){
+				veInstances.splice( veInstances.indexOf(veEditor), 1 );
+			} );
+
 			veInstances.push( veEditor );
 		} );
+	})
 	};
 
 	/**
@@ -84,5 +99,12 @@
 	};
 
 	initVisualEditor();
-
+	$('body').on('VEForAllConvertingStarted', function(){
+		//$('#wpSave,#wpSaveAndContinue').attr( 'disabled', 'disabled' );
+	});
+	$('body').on('VEForAllConvertingFinished', function(){
+		// if( mw.isNoVeWaitingForUpdate() ){
+		// 	$('#wpSave,#wpSaveAndContinue').removeAttr( 'disabled' );
+		// }
+	});
 }( jQuery, mw ) );
