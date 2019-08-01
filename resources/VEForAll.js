@@ -51,11 +51,7 @@
 			return false;
 
 		}
-		return instanceFound;
-	}
 
-	function catchAndDelayClickEvent( buttonId ) {
-		var waitForUpdatingStoppd;
 
 		return this.each( function () {
 
@@ -88,8 +84,8 @@
 
 			veInstances.push( veEditor );
 		} );
-	})
-	};
+	});
+};
 
 	/**
 	 * @return {Array}
