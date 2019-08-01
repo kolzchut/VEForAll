@@ -74,6 +74,7 @@
 					veEditor.target.$node.on( 'keyup', function () {
 						$( textarea ).trigger( 'change' );
 					} );
+					this.target.setDir();
 				} );
 			} );
 

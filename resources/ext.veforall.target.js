@@ -102,7 +102,7 @@
 			target.updateToolbarVisibility();
 		} );
 		this.updateToolbarVisibility();
-		this.setDir();
+		
 	};
 
 	/**
