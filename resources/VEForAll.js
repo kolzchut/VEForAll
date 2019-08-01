@@ -56,7 +56,9 @@
 		return this.each( function () {
 
 			var textarea = this,
-				veEditor = new mw.veForAll.Editor( this, $( this ).val() );
+				veEditor = new mw.veForAll.Editor( this, $( this ).val(), , function(){
+					veInstances.splice( veInstances.indexOf(veEditor), 1 );
+				});
 
 
 			veEditor.initCallbacks.push( function () {
@@ -75,15 +77,8 @@
 				} );
 			} );
 
+		veInstances.push( veEditor );
 
-		return this.each( function () {
-			// $(this).before(logo, editor, toolbar);
-			var veEditor = new mw.veForAll.Editor( this, $( this ).val(), function(){
-				veInstances.splice( veInstances.indexOf(veEditor), 1 );
-			} );
-
-			veInstances.push( veEditor );
-		} );
 	});
 };
 
